@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="lost and found.css">
+    <title>lost and found</title>
+</head>
+<body>
+<div class="container">
+    <h1>Welcome to our website!</h1>
+    <div class="i"><img src="logo.jpg" alt=""></div>
+    <p class="text"><button style="width: 200px; height: 50px; background-color: #fff; border-color: #666; border-radius: 10px;"><a class="text1" href="instruction.pdf" download>download instruction</a></button>
+    <svg class="rim" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10l5 5l5-5"/></g></svg></p>
+    <h1>Бюро находок</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('lost')">Потерянные</button>
+        <button class="tab-btn" onclick="switchTab('found')">Найденные</button>
+    </div>
+
+    <div id="lost-section" class="section active">
+        <p class="subtitle">Опишите потерянный предмет</p>
+        <textarea placeholder="Например: Потерял синий кошелек..." id="lost-input"></textarea>
+        <button class="btn-submit btn-lost" onclick="addItem('lost')">Опубликовать</button>
+        <ul id="lost-list"></ul>
+    </div>
+
+    <div id="found-section" class="section">
+        <p class="subtitle">Опишите найденный предмет</p>
+        <textarea placeholder="Например: Нашел ключи от машины..." id="found-input"></textarea>
+        <button class="btn-submit btn-found" onclick="addItem('found')">Опубликовать</button>
+        <ul id="found-list"></ul>
+    </div>
+</div>
+
+<script>
+    let lostItems = JSON.parse(localStorage.getItem('lostItems')) || [];
+    let foundItems = JSON.parse(localStorage.getItem('FoundItems')) || [];
+
+    renderLists();
+
+    function switchTab(tab) {
+        const lostSec = document.getElementById('lost-section');
+        const foundSec = document.getElementById('found-section');
+        const buttons = document.querySelectorAll('.tab-btn');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        if (tab === 'lost') {
+            lostSec.classList.add('active');
+            foundSec.classList.remove('active');
+            buttons[0].classList.add('active');
+        } else {
+            foundSec.classList.add('active');
+            lostSec.classList.remove('active');
+            buttons[1].classList.add('active');
+        }
+    }
+
+    function addItem(type) {
+        const inputId = type === 'lost' ? 'lost-input' : 'found-input';
+        const storageKey = type === 'lost' ? 'lostItems' : 'FoundItems';
+        const itemsArray = type === 'lost' ? lostItems : foundItems;
+
+        const text = document.getElementById(inputId).value;
+        if (text.trim() === "") return;
+
+        itemsArray.push(text);
+        localStorage.setItem(storageKey, JSON.stringify(itemsArray));
+        
+        document.getElementById(inputId).value = "";
+        renderLists();
+    }
+
+    function renderLists() {
+        const lostListEl = document.getElementById("lost-list");
+        lostListEl.innerHTML = "";
+        for (let i = 0; i < lostItems.length; i++) {
+            const li = document.createElement("li");
+            li.textContent = lostItems[i];
+            lostListEl.appendChild(li);
+        }
+
+        const foundListEl = document.getElementById("found-list");
+        foundListEl.innerHTML = "";
+        for (let i = 0; i < foundItems.length; i++) {
+            const li = document.createElement("li");
+            li.textContent = foundItems[i];
+            foundListEl.appendChild(li);
+        }
+    }
+</script>
+</body>
+</html>
